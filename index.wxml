@@ -1,0 +1,103 @@
+<view class="container"> 
+  <!-- 第一排 -->
+  <view class="row" style="height: 224rpx; display: flex; box-sizing: border-box">
+    <view class="left">
+      <view class="data-display">
+        <text class="full-line">每15秒自动刷新</text>
+        <text class="full-line">PH:                  <text class="dynamic  {{pColorClass}}">{{A}}</text> pH</text>
+        <text class="full-line">电导率:            <text class="dynamic  {{dColorClass}}">{{B}}</text> mS/cm</text>
+        <text class="full-line">溶解度:            <text class="dynamic  {{rColorClass}}">{{C}}</text> g/L</text>
+        <text class="full-line">污浊度:            <text class="dynamic  {{wColorClass}}">{{D}}</text> NTU</text>
+      </view>
+    </view>
+    <view class="right">
+      <view class="status-explanation">
+        <text class="full-line">颜色状态说明：</text>
+  <text class="full-line green-text">绿色：安全</text>
+  <text class="full-line yellow-text">橙色：临近</text>
+  <text class="full-line red-text">红色：超标</text>
+      </view>
+    </view>
+  </view>
+  <!-- 第二排 --> 
+  <view class="row">
+    <text class="full-line">点击空白处即可修改阈值</text>
+      <text class="full-line">PH当前设定阈值：<text>  {{PlowValue}}</text>到{{PhighValue}}</text>
+      <view class="input-container">
+        <input bindinput="onInputPlow" step="0.01"  />
+        <text class="label">到</text>
+        <input bindinput="onInputPhigh" step="0.01" />
+        <button bindtap="confirmRangeP" >确认修改</button>
+      </view>
+      <text class="full-line">电导率当前设定阈值：<text>  {{DlowValue}}</text>到{{DhighValue}}</text>
+        <view class="input-container">
+          <input bindinput="onInputDlow" step="0.01"  />
+          <text class="label">到</text>
+          <input bindinput="onInputDhigh" step="0.01"  />
+          <button bindtap="confirmRangeD" >确认修改</button>
+        </view>
+      <text class="full-line">溶解度当前设定阈值：<text>  {{RlowValue}}</text>到{{RhighValue}}</text>
+      <view class="input-container">
+        <input  bindinput="onInputRlow" step="0.01" />
+        <text class="label">到</text>
+        <input  bindinput="onInputRhigh" step="0.01"  />
+        <button bindtap="confirmRangeR" >确认修改</button>
+      </view>
+      <text class="full-line">污浊度当前设定阈值：<text>  {{WlowValue}}</text>到{{WhighValue}}</text>
+      <view class="input-container">
+        <input bindinput="onInputWlow" step="0.01" />
+        <text class="label">到</text>
+        <input bindinput="onInputWhigh" step="0.01"  /> 
+        <button bindtap="confirmRangeW" >确认修改</button>
+      </view>
+  </view>
+  <!-- 第三排 -->
+  <view class="row">
+    <view class="left">
+      <text class="full-line">点击查看历史数据：</text>
+      <button bindtap="viewHistoryPH" style="width: 164rpx; display: block; box-sizing: border-box; left: 0rpx; top: 0rpx">PH</button>
+      <button bindtap="viewHistoryConductivity" style="width: 164rpx; display: block; box-sizing: border-box; left: 0rpx; top: 0rpx">电导率</button>
+    </view>
+    <view class="right">
+      <text class="full-line">点击查看历史数据</text>
+      <button bindtap="viewHistorySolubility" style="width: 164rpx; display: block; box-sizing: border-box; left: 0rpx; top: 0rpx">溶解度</button>
+      <button bindtap="viewHistoryTurbidity" style="width: 164rpx; display: block; box-sizing: border-box; left: 0rpx; top: 0rpx">污浊度</button>
+    </view>
+  </view>
+  <!-- 第四排 -->
+  <view class="row control-section">
+    <text class="full-line">为免打扰，警报短信每 2 小时至多发送一次</text> 
+    <text class="full-line">当前绑定号码为：{{phoneValue}}</text>
+    <input type="text" placeholder="点此绑定/换绑"  bindinput="onInputphone"  /> 
+    <button bindtap="confirmRangephone" style="width: 197rpx; display: block; box-sizing: border-box; left: -244rpx; top: 47rpx; position: relative">绑定</button>
+    <button bindtap="break" style="width: 197rpx; display: block; box-sizing: border-box; left: -59rpx; top: 47rpx; position: relative">break</button>
+    <text class="full-line"  style="position: relative; left: 0rpx; top: 52rpx">开灯关灯验证通信顺利</text>
+    <button bindtap="openled" style="width: 197rpx; display: block; box-sizing: border-box; left: -43rpx; top: 35rpx; position: relative">开灯</button>
+    <button bindtap="closeled" style="width: 197rpx; display: block; box-sizing: border-box; left: 9rpx; top: 35rpx; position: relative">关灯</button>
+  </view>
+<!-- 弹窗 -->
+<view wx:if="{{showTableModal}}" class="modal"> 
+  <view class="modal-content">
+    <view class="modal-title">
+  <text class="modal-title-text">{{tableTitle}}</text> <!-- 显示不同的标题 -->
+</view>
+    <view class="modal-body">
+      <view class="table-row table-header">
+        <text class="table-cell">日期</text>
+        <text class="table-cell">当日最大值</text>
+        <text class="table-cell">当日最小值</text>
+        <text class="table-cell">当日总和</text>
+      </view>
+      <block wx:for="{{tableData}}" wx:key="date">
+        <view class="table-row">
+          <text class="table-cell">{{item.time}}</text>
+          <text class="table-cell">{{item.max}}</text>
+          <text class="table-cell">{{item.min}}</text>
+          <text class="table-cell">{{item.sum}}</text>
+        </view>
+      </block>
+    </view>
+    <button class="close-btn" bindtap="closeTableModal">关闭</button>
+  </view>
+</view>
+</view>
